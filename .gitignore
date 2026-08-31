@@ -1,0 +1,135 @@
+# ============================================================
+# Linux
+# ============================================================
+
+*~
+*.swp
+*.swo
+.nfs*
+
+
+# ============================================================
+# IDEs / Editors
+# ============================================================
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/.nb-gradle/
+
+
+# ============================================================
+# Spring Boot / Java - Backend
+# ============================================================
+
+backend/target/
+backend/build/
+backend/.gradle/
+
+# Compiled Java
+*.class
+
+# Logs
+*.log
+
+# Spring Boot logs
+spring.log
+
+# Keep Maven wrapper
+!backend/mvnw
+!backend/mvnw.cmd
+!backend/.mvn/wrapper/
+
+
+# ============================================================
+# Environment / Secrets
+# ============================================================
+
+.env
+.env.*
+!.env.example
+
+backend/.env
+frontend/.env
+
+# Local Spring configuration
+application-local.properties
+application-local.yml
+
+# Certificates / private keys
+*.pem
+*.key
+*.p12
+*.jks
+
+
+# ============================================================
+# Angular / Node.js - Frontend
+# ============================================================
+
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+frontend/.cache/
+
+# Angular compilation
+frontend/out-tsc/
+
+# npm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# npm cache
+.npm/
+
+# Test coverage
+frontend/coverage/
+
+
+# ============================================================
+# Temporary files
+# ============================================================
+
+*.tmp
+*.temp
+*.bak
+*.old
+
+
+# ============================================================
+# Database
+# ============================================================
+
+# Local database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Do NOT ignore .sql files.
+# Database migrations / schema scripts should be committed.
+
+
+# ============================================================
+# Docker
+# ============================================================
+
+docker-compose.override.yml
