@@ -1,0 +1,54 @@
+<div class="flex h-screen bg-stone-300 font-sans text-stone-800 overflow-hidden">
+
+  <aside class="w-72 bg-slate-900 text-stone-100 flex flex-col shadow-2xl z-10">
+    <div class="h-48 overflow-hidden relative border-b border-slate-700 shadow-inner">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg"
+        alt="Les mains"
+        class="absolute inset-0 w-full h-full object-cover object-[center_30%] scale-110 filter contrast-125 sepia-[0.3]"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+    </div>
+
+    <div class="px-6 pb-6 text-center -mt-8 relative z-10">
+      <h1 class="text-3xl font-serif text-stone-100 tracking-wide shadow-black drop-shadow-md">Sophia</h1>
+      <p class="text-xs text-stone-400 mt-1 uppercase tracking-widest">Transmission de la Pensée</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-6 space-y-2">
+    </nav>
+  </aside>
+
+
+  <main class="flex-1 flex flex-col h-full overflow-y-auto p-8 gap-6">
+
+    <div class="bg-stone-100 border border-stone-200/60 rounded-xl shadow-sm p-8 text-center relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-1 h-full bg-amber-700/50"></div>
+      <h2 class="text-3xl font-serif italic text-stone-800 tracking-wide">
+        "Je pense, donc je suis."
+      </h2>
+      <p class="text-stone-500 mt-2 font-medium">— René Descartes</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-4">
+      <h3 class="text-sm font-semibold text-stone-800 uppercase tracking-wider mb-4 px-2">Actions Rapides</h3>
+      <div class="flex flex-col sm:flex-row gap-4">
+        <button
+          (click)="ajouterEleve()"
+          class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 font-medium py-4 px-6 rounded-lg shadow transition-colors flex items-center justify-center gap-3">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path></svg>
+          Ajouter un nouvel élève
+        </button>
+
+        <button
+          (click)="programmerChapitre()"
+          class="flex-1 bg-gradient-to-r from-amber-800 to-amber-700 hover:from-amber-700 hover:to-amber-600 text-stone-100 font-medium py-4 px-6 rounded-lg shadow transition-all flex items-center justify-center gap-3 border border-amber-900/50">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          Programmer un nouveau chapitre
+        </button>
+      </div>
+    </div>
+
+    <app-calendar></app-calendar>
+  </main>
+</div>

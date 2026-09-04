@@ -1,135 +1,141 @@
-# ============================================================
-# Linux
-# ============================================================
+# ==========================================
 
-*~
-*.swp
-*.swo
-.nfs*
+# Philosophia - Spring Boot + Angular
 
+# ==========================================
 
-# ============================================================
-# IDEs / Editors
-# ============================================================
+# ------------------------------------------
 
-# IntelliJ IDEA
+# IDE / Editors
+
+# ------------------------------------------
+
 .idea/
 *.iml
 *.iws
 *.ipr
-
-# VS Code
 .vscode/
-!.vscode/extensions.json
-!.vscode/settings.json
-
-# Eclipse
 .classpath
 .project
 .settings/
 
-# NetBeans
-/nbproject/private/
-/nbbuild/
-/dist/
-/.nb-gradle/
+# ------------------------------------------
 
+# OS generated files
 
-# ============================================================
-# Spring Boot / Java - Backend
-# ============================================================
+# ------------------------------------------
 
-backend/target/
-backend/build/
-backend/.gradle/
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Compiled Java
-*.class
+# ------------------------------------------
 
 # Logs
+
+# ------------------------------------------
+
 *.log
+logs/
 
-# Spring Boot logs
-spring.log
+# ==========================================
 
-# Keep Maven wrapper
-!backend/mvnw
-!backend/mvnw.cmd
-!backend/.mvn/wrapper/
+# Spring Boot Backend
 
+# ==========================================
 
-# ============================================================
-# Environment / Secrets
-# ============================================================
+# Maven
 
-.env
-.env.*
-!.env.example
+philosophia-backend/target/
+philosophia-backend/.mvn/timing.properties
+philosophia-backend/.mvn/wrapper/maven-wrapper.jar
 
-backend/.env
-frontend/.env
+# Gradle (if used)
 
-# Local Spring configuration
-application-local.properties
-application-local.yml
+philosophia-backend/.gradle/
+philosophia-backend/build/
+philosophia-backend/.gradle/
 
-# Certificates / private keys
-*.pem
-*.key
-*.p12
-*.jks
+# Spring Boot generated files
 
+philosophia-backend/*.log
 
-# ============================================================
-# Angular / Node.js - Frontend
-# ============================================================
+# Environment / secrets
 
-frontend/node_modules/
-frontend/dist/
-frontend/.angular/
-frontend/.cache/
+philosophia-backend/.env
+philosophia-backend/.env.*
+!philosophia-backend/.env.example
 
-# Angular compilation
-frontend/out-tsc/
+# ------------------------------------------
 
-# npm logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# Java generated files
 
-# npm cache
-.npm/
+# ------------------------------------------
+
+*.class
+hs_err_pid*
+
+# ==========================================
+
+# Angular Frontend
+
+# ==========================================
+
+# Node dependencies
+
+philosophia-frontend/node_modules/
+
+# Angular build output
+
+philosophia-frontend/dist/
+philosophia-frontend/out-tsc/
+
+# Angular cache
+
+philosophia-frontend/.angular/
 
 # Test coverage
-frontend/coverage/
 
+philosophia-frontend/coverage/
 
-# ============================================================
+# Environment files
+
+philosophia-frontend/.env
+philosophia-frontend/.env.*
+!philosophia-frontend/.env.example
+
+# npm logs
+
+philosophia-frontend/npm-debug.log*
+philosophia-frontend/yarn-debug.log*
+philosophia-frontend/yarn-error.log*
+
+# Package manager caches
+
+philosophia-frontend/.npm/
+philosophia-frontend/.yarn/
+
+# ==========================================
+
 # Temporary files
-# ============================================================
+
+# ==========================================
 
 *.tmp
 *.temp
-*.bak
-*.old
+*.swp
+*.swo
+*~
 
+# ==========================================
 
-# ============================================================
-# Database
-# ============================================================
+# Local configuration
 
-# Local database files
-*.sqlite
-*.sqlite3
-*.db
+# ==========================================
 
-# Do NOT ignore .sql files.
-# Database migrations / schema scripts should be committed.
-
-
-# ============================================================
-# Docker
-# ============================================================
-
-docker-compose.override.yml
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
