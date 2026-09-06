@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
@@ -28,7 +29,6 @@ public class JwtService {
     public String generateToken(Long userId, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMs);
-
         return Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("role", role)
@@ -58,6 +58,10 @@ public class JwtService {
 
     public String extractJti(String token) {
         return extractClaim(token, Claims::getId);
+    }
+
+    public Instant extractExpiration(String token) {
+        return extractClaim(token, claims -> claims.getExpiration().toInstant());
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> resolver) {

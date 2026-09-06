@@ -7,7 +7,6 @@ import { LoginRequest, LoginResponse, CurrentUser } from '../models/authentifica
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
 
-  // état courant, lisible partout dans l'app via currentUser$
   private currentUserSubject = new BehaviorSubject<CurrentUser | null>(this.restoreFromStorage());
   currentUser$ = this.currentUserSubject.asObservable();
 
@@ -17,7 +16,7 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials, { withCredentials: true })
       .pipe(
         tap((res) => {
-          const user: CurrentUser = { username: res.username, role: res.role };
+          const user: CurrentUser = { username: res.username, role: res.role, profile: res.profile };
           this.currentUserSubject.next(user);
           sessionStorage.setItem('currentUser', JSON.stringify(user));
         })
@@ -34,6 +33,15 @@ export class AuthService {
       );
   }
 
+  // Call this after a successful profile update so the header/session stays in sync
+  updateStoredProfile(profile: CurrentUser['profile']): void {
+    const current = this.currentUserSubject.value;
+    if (!current) return;
+    const updated: CurrentUser = { ...current, profile };
+    this.currentUserSubject.next(updated);
+    sessionStorage.setItem('currentUser', JSON.stringify(updated));
+  }
+
   getCurrentUser(): CurrentUser | null {
     return this.currentUserSubject.value;
   }
@@ -43,7 +51,8 @@ export class AuthService {
   }
 
   hasRole(role: string): boolean {
-    return this.currentUserSubject.value?.role === role;
+    const currentRole = this.currentUserSubject.value?.role;
+    return !!currentRole && currentRole.trim().toUpperCase() === role.trim().toUpperCase();
   }
 
   private restoreFromStorage(): CurrentUser | null {

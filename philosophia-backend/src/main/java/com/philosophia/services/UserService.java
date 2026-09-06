@@ -1,9 +1,8 @@
 package com.philosophia.services;
 
-import com.philosophia.dto.CreateStudentRequest;
-import com.philosophia.dto.StudentCountResponse;
-import com.philosophia.dto.StudentResponse;
+import com.philosophia.dto.*;
 import com.philosophia.enums.UserRole;
+import com.philosophia.exceptions.InvalidCredentialsException;
 import com.philosophia.exceptions.UserNotFoundException;
 import com.philosophia.exceptions.UsernameAlreadyExistsException;
 import com.philosophia.models.Student;
@@ -21,12 +20,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, StudentRepository studentRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, StudentRepository studentRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.studentRepository = studentRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
+
 
     public StudentCountResponse getStudentCount() {
         return new StudentCountResponse(this.userRepository.countByRole(UserRole.STUDENT));
@@ -69,4 +71,25 @@ public class UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur introuvable : " + username));
     }
+    @Transactional(readOnly = true)
+    public StudentResponse getStudentProfile(User user) {
+        Student student = studentRepository.findByUserIdWithSection(user.getId())
+                .orElseThrow(() -> new UserNotFoundException(user.getId()));
+
+        String sectionName = student.getSection() != null ? student.getSection().getName() : null;
+
+        return new StudentResponse(
+                student.getId(),
+                user.getUsername(),
+                student.getFirstName(),
+                student.getLastName(),
+                student.getPhone(),
+                null, // no email field on Student yet — add one if you need it
+                student.getInstitute(),
+                sectionName,
+                student.getUnpaidSessionsCount()
+        );
+    }
+
+
 }
