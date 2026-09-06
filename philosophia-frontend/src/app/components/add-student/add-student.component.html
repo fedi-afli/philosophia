@@ -1,1 +1,120 @@
-<p>add-student works!</p>
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="close()">
+  <div
+    class="bg-white rounded-xl shadow-xl w-full max-w-md p-6"
+    (click)="$event.stopPropagation()">
+
+    <!-- SUCCESS STATE -->
+    <div *ngIf="saveSucceeded" class="text-center space-y-4">
+      <div class="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-serif text-stone-800">Élève ajouté avec succès</h3>
+      <p class="text-sm text-stone-500">{{ savedStudentName }} a été enregistré.</p>
+
+      <div class="border border-stone-200 rounded-lg p-4 bg-stone-50 text-left space-y-1">
+        <p class="text-sm"><span class="text-stone-500">Utilisateur :</span> {{ credentials?.username }}</p>
+        <p class="text-sm"><span class="text-stone-500">Mot de passe :</span> {{ credentials?.password }}</p>
+      </div>
+
+      <button
+        (click)="copyCredentials()"
+        class="w-full bg-amber-700 hover:bg-amber-600 text-stone-100 font-medium py-2 rounded-lg text-sm">
+        {{ copied ? 'Copié !' : 'Copier les identifiants' }}
+      </button>
+
+      <button (click)="finish()" class="w-full bg-slate-800 hover:bg-slate-700 text-stone-100 rounded-lg py-2.5">
+        Terminé
+      </button>
+    </div>
+
+    <!-- FORM STATE -->
+    <ng-container *ngIf="!saveSucceeded">
+      <h3 class="text-lg font-serif text-stone-800 mb-4">Ajouter un nouvel élève</h3>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs uppercase tracking-wide text-stone-500">Nom complet</label>
+          <input
+            [(ngModel)]="fullName"
+            type="text"
+            placeholder="Amine Ben Salah"
+            class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Téléphone</label>
+            <input [(ngModel)]="phone" type="text" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Établissement</label>
+            <input [(ngModel)]="institute" type="text" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <button
+          (click)="generate()"
+          [disabled]="isGenerating"
+          class="w-full bg-slate-800 hover:bg-slate-700 text-stone-100 font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50">
+          {{ isGenerating ? 'Génération...' : 'Générer identifiant et mot de passe' }}
+        </button>
+
+        <div *ngIf="credentials" class="border border-stone-200 rounded-lg p-4 space-y-3 bg-stone-50">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Nom d'utilisateur</label>
+            <input
+              [ngModel]="credentials.username"
+              (ngModelChange)="onUsernameEdited($event)"
+              type="text"
+              class="w-full mt-1 border rounded-lg px-3 py-2"
+              [class.border-red-400]="usernameStatus === 'taken'"
+              [class.border-green-400]="usernameStatus === 'available'"
+            />
+            <p class="text-xs mt-1"
+               [class.text-red-500]="usernameStatus === 'taken'"
+               [class.text-green-600]="usernameStatus === 'available'"
+               [class.text-stone-400]="usernameStatus === 'checking'">
+              <ng-container [ngSwitch]="usernameStatus">
+                <span *ngSwitchCase="'taken'">Déjà utilisé</span>
+                <span *ngSwitchCase="'available'">Disponible</span>
+                <span *ngSwitchCase="'checking'">Vérification...</span>
+              </ng-container>
+            </p>
+          </div>
+
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Mot de passe</label>
+            <div class="flex gap-2 mt-1">
+              <input [(ngModel)]="credentials.password" type="text" class="flex-1 border border-stone-300 rounded-lg px-3 py-2" />
+              <button (click)="regeneratePassword()" class="px-3 border border-stone-300 rounded-lg hover:bg-stone-100" title="Régénérer">
+                ↻
+              </button>
+            </div>
+          </div>
+
+          <button
+            (click)="copyCredentials()"
+            class="w-full bg-amber-700 hover:bg-amber-600 text-stone-100 font-medium py-2 rounded-lg text-sm">
+            {{ copied ? 'Copié !' : 'Copier les identifiants' }}
+          </button>
+        </div>
+
+        <p *ngIf="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
+
+        <div class="flex gap-3 pt-2">
+          <button (click)="close()" class="flex-1 border border-stone-300 rounded-lg py-2.5 text-stone-600 hover:bg-stone-50">
+            Annuler
+          </button>
+          <button
+            (click)="save()"
+            [disabled]="!credentials || usernameStatus !== 'available' || isSaving"
+            class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 rounded-lg py-2.5 disabled:opacity-50">
+            {{ isSaving ? 'Enregistrement...' : "Enregistrer l'élève" }}
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { CalendarComponent} from "../calendar/calendar.component";
+import {Router} from "@angular/router";
 
 interface Session {
   day: string;
@@ -19,6 +20,10 @@ interface Session {
   styleUrl: './homepage.component.css'
 })
 export class HomepageComponent {
+
+
+  constructor(private router:Router) {
+  }
 
   // Calendar headers
   days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
@@ -53,10 +58,11 @@ export class HomepageComponent {
 
   // Actions
   ajouterEleve(): void {
-    console.log('Ouverture du formulaire: Ajouter un nouvel élève');
+    this.router.navigate(['eleve/ajout']);
   }
 
   programmerChapitre(): void {
-    console.log('Ouverture du formulaire: Programmer un nouveau chapitre');
+    this.router.navigate(['chapitre//ajout']);
+
   }
 }
