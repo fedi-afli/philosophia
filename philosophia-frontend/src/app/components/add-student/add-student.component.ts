@@ -2,8 +2,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
-import { StudentService, Credentials } from '../../services/student.service';
+import {  Credentials} from "../../models/authentification";
 import {Router} from "@angular/router";
+import {StudentService} from "../../services/student.service";
 
 @Component({
   selector: 'app-add-student',

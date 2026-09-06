@@ -2,32 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import {CheckUsernameResponse, CreateStudentRequest, Credentials, StudentResponse} from "../models/authentification";
 
-export interface Credentials {
-  username: string;
-  password: string;
-}
 
-export interface CheckUsernameResponse {
-  available: boolean;
-}
-
-export interface CreateStudentRequest {
-  firstName: string;
-  lastName: string;
-  username: string;
-  password: string;
-  phone?: string;
-  institute?: string;
-  sectionId?: number | null;
-}
-
-export interface StudentResponse {
-  id: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-}
 
 @Injectable({
   providedIn: 'root',

@@ -1,1 +1,100 @@
-<router-outlet></router-outlet>
+
+<ng-container *ngIf="showShell$ | async; else bareOutlet">
+  <div class="flex h-screen bg-stone-300 font-sans text-stone-800 overflow-hidden">
+
+    <aside class="w-72 bg-slate-900 text-stone-100 flex flex-col shadow-2xl z-10">
+
+      <div class="h-48 overflow-hidden relative border-b border-slate-700 shadow-inner">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Michelangelo_-_Creation_of_Adam_%28cropped%29.jpg"
+          alt="Les mains"
+          class="absolute inset-0 w-full h-full object-cover object-[center_30%] scale-110 filter contrast-125 sepia-[0.3]"
+        />
+
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+      </div>
+
+      <div class="px-6 pb-6 text-center -mt-8 relative z-10">
+        <h1 class="text-3xl font-serif text-stone-100 tracking-wide shadow-black drop-shadow-md">
+          Sophia
+        </h1>
+
+        <p class="text-xs text-stone-400 mt-1 uppercase tracking-widest">
+          Transmission de la Pensée
+        </p>
+      </div>
+
+      <nav class="flex-1 px-4 py-6 space-y-2">
+        <!-- Accueil -->
+<a
+        routerLink="/"
+        routerLinkActive="bg-slate-700"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
+        >
+        Accueil
+        </a>
+
+        <!-- Ajouter un élève — ADMIN only -->
+<a
+        *ngIf="authService.hasRole('ADMIN')"
+        routerLink="/eleve/ajout"
+        routerLinkActive="bg-slate-700"
+        class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
+        >
+        Ajouter un élève
+        </a>
+
+        <!-- Programmer un chapitre — ADMIN only -->
+<a
+        *ngIf="authService.hasRole('ADMIN')"
+        routerLink="/chapitre/ajout"
+        routerLinkActive="bg-slate-700"
+        class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
+        >
+        Programmer un chapitre
+        </a>
+      </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+
+      <header
+        class="bg-white border-b border-stone-200 shadow-sm px-8 py-4 flex items-center justify-between"
+      >
+        <div>
+          <p class="text-sm text-stone-500">
+            Bienvenue
+          </p>
+
+          <p class="font-serif text-lg text-stone-800">
+            {{ (currentUser$ | async)?.username }}
+          </p>
+        </div>
+
+        <button
+          (click)="logout()"
+          class="text-sm font-medium text-stone-600 hover:text-stone-900 border border-stone-300 rounded-lg px-4 py-2 transition-colors"
+        >
+          Se déconnecter
+        </button>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-8">
+        <router-outlet></router-outlet>
+      </main>
+
+      <footer
+        class="bg-white border-t border-stone-200 px-8 py-3 text-center text-xs text-stone-400"
+      >
+        © 2026 Sophia — Transmission de la Pensée
+      </footer>
+
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #bareOutlet>
+  <router-outlet></router-outlet>
+</ng-template>
+```

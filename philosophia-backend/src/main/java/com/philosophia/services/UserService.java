@@ -4,15 +4,20 @@ import com.philosophia.dto.CreateStudentRequest;
 import com.philosophia.dto.StudentCountResponse;
 import com.philosophia.dto.StudentResponse;
 import com.philosophia.enums.UserRole;
+import com.philosophia.exceptions.UserNotFoundException;
+import com.philosophia.exceptions.UsernameAlreadyExistsException;
 import com.philosophia.models.Student;
 import com.philosophia.models.User;
 import com.philosophia.repository.StudentRepository;
 import com.philosophia.repository.UserRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
@@ -23,16 +28,16 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-
-    public StudentCountResponse getStudentCount(){
+    public StudentCountResponse getStudentCount() {
         return new StudentCountResponse(this.userRepository.countByRole(UserRole.STUDENT));
-
-
-
     }
 
+    @Transactional
+    public StudentResponse addStudent(CreateStudentRequest req) {
+        if (userRepository.existsByUsername(req.username())) {
+            throw new UsernameAlreadyExistsException(req.username());
+        }
 
-    public StudentResponse addStudent(CreateStudentRequest req){
         User user = new User();
         user.setUsername(req.username());
         user.setPasswordHash(passwordEncoder.encode(req.password()));
@@ -49,7 +54,19 @@ public class UserService {
 
         userRepository.save(user);
         studentRepository.save(student);
-        return new StudentResponse(student.getId(),user.getUsername(),student.getFirstName(),student.getLastName(),"","","","",0);
 
+        return new StudentResponse(student.getId(), user.getUsername(), student.getFirstName(),
+                student.getLastName(), "", "", "", "", 0);
+    }
+
+    public User findById(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur introuvable : " + username));
     }
 }
