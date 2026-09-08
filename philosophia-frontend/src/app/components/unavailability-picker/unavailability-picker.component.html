@@ -1,0 +1,82 @@
+<div
+  class="bg-white border border-stone-200 rounded-xl shadow-sm p-8"
+  (mouseup)="onMouseUp()"
+  (mouseleave)="onMouseUp()"
+>
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="text-2xl font-serif text-stone-800">Mes disponibilités</h2>
+    <button
+      (click)="clearAll()"
+      class="text-xs uppercase tracking-wide text-stone-400 hover:text-stone-600 transition-colors"
+    >
+      Tout effacer
+    </button>
+  </div>
+  <p class="text-sm text-stone-500 mb-6">
+    Cliquez et glissez sur les créneaux où vous êtes disponible pour donner des cours.
+  </p>
+
+  <div *ngIf="isLoading" class="text-sm text-stone-400 py-12 text-center">
+    Chargement de vos disponibilités...
+  </div>
+
+  <div *ngIf="!isLoading" class="overflow-x-auto select-none">
+    <div
+      class="grid gap-px bg-stone-200 rounded-lg overflow-hidden"
+      style="grid-template-columns: 56px repeat(7, minmax(70px, 1fr));"
+    >
+      <div class="bg-white"></div>
+      <div
+        *ngFor="let day of days"
+        class="bg-white text-center py-2 text-xs font-medium uppercase tracking-wide text-stone-500"
+      >
+        {{ day }}
+      </div>
+
+      <ng-container *ngFor="let slot of slotIndices">
+        <div class="bg-white text-right pr-2 text-[10px] text-stone-400 relative" style="height: 22px;">
+          <span *ngIf="isHourStart(slot)" class="absolute right-2 -top-1.5">{{ slotToTime(slot) }}</span>
+        </div>
+
+        <div
+          *ngFor="let day of days; let dayIndex = index"
+          (mousedown)="onCellMouseDown(dayIndex, slot, $event)"
+          (mouseenter)="onCellMouseEnter(dayIndex, slot)"
+          class="cursor-pointer transition-colors"
+          [class.bg-emerald-600]="grid[dayIndex][slot]"
+          [class.bg-white]="!grid[dayIndex][slot]"
+          [class.hover:bg-stone-100]="!grid[dayIndex][slot]"
+          [class.border-t]="isHourStart(slot)"
+          [class.border-stone-200]="isHourStart(slot)"
+          style="height: 22px;"
+        ></div>
+      </ng-container>
+    </div>
+  </div>
+
+  <div *ngIf="ranges.length > 0" class="mt-6 pt-4 border-t border-stone-200">
+    <p class="text-xs uppercase tracking-wide text-stone-500 mb-3">Récapitulatif</p>
+    <div class="flex flex-wrap gap-2">
+      <span
+        *ngFor="let r of ranges"
+        class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 text-sm text-emerald-800"
+      >
+        {{ r.dayLabel }} · {{ r.startTime }}–{{ r.endTime }}
+        <button (click)="removeRange(r)" class="text-emerald-400 hover:text-red-500 leading-none">×</button>
+      </span>
+    </div>
+  </div>
+
+  <p *ngIf="errorMessage" class="text-sm text-red-500 mt-4">{{ errorMessage }}</p>
+
+  <div class="flex justify-end items-center gap-3 pt-6">
+    <span *ngIf="saveSucceeded" class="text-sm text-green-600">Enregistré ✓</span>
+    <button
+      (click)="save()"
+      [disabled]="isSaving || isLoading"
+      class="bg-slate-800 hover:bg-slate-700 text-stone-100 font-medium py-2.5 px-6 rounded-lg transition-colors disabled:opacity-50"
+    >
+      {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+    </button>
+  </div>
+</div>

@@ -1,18 +1,17 @@
 package com.philosophia.controllers;
 
 import com.philosophia.dto.*;
-
 import com.philosophia.enums.UserRole;
 import com.philosophia.models.User;
-import com.philosophia.repository.StudentRepository;
-import com.philosophia.repository.UserRepository;
 import com.philosophia.services.CredentialGeneratorService;
 import com.philosophia.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -20,12 +19,10 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final CredentialGeneratorService credentialGeneratorService;
-    private final UserRepository userRepository;
     private final UserService userService;
-    private final StudentRepository studentRepository;
-
 
     @PostMapping("/generate-credentials")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CredentialsResponse> generateCredentials(
             @RequestBody GenerateCredentialsRequest request) {
         String username = credentialGeneratorService.generateUsername(request.fullName());
@@ -34,30 +31,62 @@ public class UserController {
     }
 
     @GetMapping("/check-username")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CheckUsernameResponse> checkUsername(@RequestParam String username) {
         boolean available = credentialGeneratorService.isUsernameAvailable(username);
         return ResponseEntity.ok(new CheckUsernameResponse(available));
     }
 
     @PostMapping("/students")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentResponse> createStudent(@RequestBody CreateStudentRequest req) {
         if (!credentialGeneratorService.isUsernameAvailable(req.username())) {
             return ResponseEntity.status(409).build();
         }
-
-
-
         return ResponseEntity.ok(this.userService.addStudent(req));
     }
 
-
     @GetMapping("/studentCount")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentCountResponse> getStudentCount(Authentication authentication) {
-
-        User currentUser = userService.findById(authentication);
-        if (currentUser.getRole() == UserRole.STUDENT) {
-            return ResponseEntity.status(404).build();
-        }
+        Long authUserId = Long.valueOf(authentication.getName());
+        User currentUser = userService.findById(authUserId);
         return ResponseEntity.ok(this.userService.getStudentCount());
+    }
+
+    @PutMapping("/students/me")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<StudentResponse> updateMyProfile(
+            Authentication authentication,
+            @RequestBody ModifyProfileRequest request) {
+        Long userId = Long.valueOf(authentication.getName());
+        return ResponseEntity.ok(userService.updateProfile(userId, request));
+    }
+    @GetMapping("/students/me/unavailability")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<UnavailabilityRangeResponse>> getMyUnavailability(Authentication authentication) {
+        Long userId = Long.valueOf(authentication.getName());
+        return ResponseEntity.ok(userService.getUnavailability(userId));
+    }
+
+    @PutMapping("/students/me/unavailability")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<List<UnavailabilityRangeResponse>> updateMyUnavailability(
+            Authentication authentication,
+            @RequestBody UpdateUnavailabilityRequest request) {
+        Long userId = Long.valueOf(authentication.getName());
+        return ResponseEntity.ok(userService.updateUnavailability(userId, request));
+    }
+    @GetMapping("/teacher/availability")
+    public ResponseEntity<List<AvailabilityRangeResponse>> getTeacherAvailability() {
+        // any authenticated user can read this — students need it to see when the teacher is free
+        return ResponseEntity.ok(userService.getTeacherAvailability());
+    }
+
+    @PutMapping("/teacher/availability")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<AvailabilityRangeResponse>> updateTeacherAvailability(
+            @RequestBody UpdateAvailabilityRequest request) {
+        return ResponseEntity.ok(userService.updateTeacherAvailability(request));
     }
 }

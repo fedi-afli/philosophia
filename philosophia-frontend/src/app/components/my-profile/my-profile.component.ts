@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService} from "../../services/authentification.service";
+import { AuthService } from "../../services/authentification.service";
 import { ProfileService } from '../../services/profile.service';
-import { StudentResponse, UpdateStudentProfileRequest } from '../../models/authentification';
+import { StudentResponse, ModifyProfileRequest } from '../../models/authentification';
 
 @Component({
   selector: 'app-my-profile',
@@ -17,7 +17,8 @@ export class MyProfileComponent implements OnInit {
   isSaving = false;
   errorMessage = '';
 
-  form: UpdateStudentProfileRequest = { firstName: '', lastName: '', phone: '', institute: '' };
+  form: ModifyProfileRequest = { phone: '', institute: '', section: '' };
+  private original: ModifyProfileRequest = { phone: '', institute: '', section: '' };
 
   constructor(
     private authService: AuthService,
@@ -34,11 +35,11 @@ export class MyProfileComponent implements OnInit {
   private resetForm(): void {
     if (!this.profile) return;
     this.form = {
-      firstName: this.profile.firstName,
-      lastName: this.profile.lastName,
       phone: this.profile.phone,
       institute: this.profile.institute,
+      section: this.profile.section ?? '',
     };
+    this.original = { ...this.form };
   }
 
   enableEdit(): void {
@@ -52,10 +53,22 @@ export class MyProfileComponent implements OnInit {
   }
 
   save(): void {
-    this.isSaving = true;
     this.errorMessage = '';
 
-    this.profileService.updateMyProfile(this.form).subscribe({
+    const payload: ModifyProfileRequest = {
+      phone: this.form.phone !== this.original.phone ? this.form.phone : '',
+      institute: this.form.institute !== this.original.institute ? this.form.institute : '',
+      section: this.form.section !== this.original.section ? this.form.section : '',
+    };
+
+    const hasChanges = Object.values(payload).some((v) => v !== '');
+    if (!hasChanges) {
+      this.editMode = false;
+      return;
+    }
+
+    this.isSaving = true;
+    this.profileService.updateMyProfile(payload).subscribe({
       next: (updated) => {
         this.profile = updated;
         this.authService.updateStoredProfile(updated);

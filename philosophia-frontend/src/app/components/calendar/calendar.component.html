@@ -1,5 +1,4 @@
 <div class="bg-white rounded-xl shadow-sm border border-stone-200 flex flex-col w-full h-[650px] overflow-hidden">
-
   <!-- Calendar Header -->
   <div class="p-4 border-b border-stone-200 flex justify-between items-center bg-stone-50">
     <div class="flex items-center gap-2">
@@ -8,15 +7,14 @@
       </svg>
       <h3 class="text-base font-semibold text-stone-800">Calendrier de la Semaine</h3>
     </div>
-    <span class="text-xs font-medium text-stone-500 bg-stone-200 px-2.5 py-1 rounded-full">6 cours programmés</span>
+    <span class="text-xs font-medium text-stone-500 bg-stone-200 px-2.5 py-1 rounded-full">{{ sessions.length }} cours programmés</span>
   </div>
 
   <!-- Calendar Grid Body -->
   <div class="flex flex-1 overflow-x-auto overflow-y-auto relative bg-stone-50">
-
     <!-- Y-Axis (Hours Sidebar) -->
     <div class="w-16 flex-none bg-white border-r border-stone-200 z-20 sticky left-0 shadow-sm">
-      <div class="h-12 border-b border-stone-200 bg-stone-100"></div> <!-- Header spacer -->
+      <div class="h-12 border-b border-stone-200 bg-stone-100"></div>
       <div *ngFor="let time of timeSlots" class="h-16 text-[11px] text-stone-500 font-medium text-center relative border-b border-stone-100">
         <span class="-top-2.5 absolute left-0 right-0">{{ time }}</span>
       </div>
@@ -25,7 +23,6 @@
     <!-- X-Axis (Days Grid) -->
     <div class="flex flex-1 min-w-[850px]">
       <div *ngFor="let day of days" class="flex-1 border-r border-stone-200/80 relative min-w-[120px]">
-
         <!-- Day Header -->
         <div class="h-12 flex items-center justify-center font-medium text-sm text-stone-700 bg-stone-100 border-b border-stone-200 sticky top-0 z-10 shadow-xs">
           {{ day }}
@@ -36,24 +33,32 @@
           <div *ngFor="let time of timeSlots" class="h-16 border-b border-stone-100"></div>
         </div>
 
+        <!-- Unavailability (grey blocks, behind sessions) -->
+        <div class="absolute left-0 right-0 top-12 px-1 pointer-events-none">
+          <div *ngFor="let block of getUnavailabilityForDay(day)"
+               class="absolute left-1 right-1 rounded-lg bg-stone-500/80 border border-stone-600/40 flex items-center justify-center overflow-hidden"
+               [style.top.px]="(block.startTime - 8) * 64"
+               [style.height.px]="block.duration * 64">
+    <span *ngIf="block.duration >= 0.5" class="text-[10px] font-medium text-stone-100 tracking-wide uppercase select-none">
+      Indisponible
+    </span>
+          </div>
+        </div>
+
         <!-- Scheduled Sessions -->
         <div class="absolute left-0 right-0 top-12 px-1 pointer-events-auto">
           <div *ngFor="let session of getSessionsForDay(day)"
                [class]="'absolute left-1 right-1 rounded-lg border p-2 text-xs text-white shadow-md transition-all hover:scale-[1.02] cursor-pointer ' + session.badgeColor"
                [style.top.px]="(session.startTime - 8) * 64"
                [style.height.px]="session.duration * 64">
-
             <div class="font-bold tracking-tight text-[11px] opacity-90">
               {{ formatTime(session.startTime) }} - {{ formatTime(session.startTime + session.duration) }}
             </div>
             <div class="font-semibold text-xs mt-0.5 truncate">{{ session.studentName }}</div>
             <div class="text-[10px] text-stone-200 truncate mt-0.5 italic">{{ session.chapterTopic }}</div>
-
           </div>
         </div>
-
       </div>
     </div>
-
   </div>
 </div>

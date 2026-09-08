@@ -26,7 +26,7 @@ export interface StudentResponse {
   phone: string;
   email: string;
   institute: string;
-  section: string;
+  section: Section;
   unpaidSession: number;
 }
 
@@ -48,11 +48,25 @@ export interface CurrentUser {
   profile: StudentResponse | null;
 }
 
-// Only the fields a student is allowed to self-edit —
-// excludes id, username, section, unpaidSession on purpose
-export interface UpdateStudentProfileRequest {
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  institute?: string;
+
+export interface StudentCountResponse {
+  studentCount: number;
+}
+
+export type Section = 'SCIENTIFIQUE' | 'LITTERAIRE';
+
+export interface ModifyProfileRequest {
+  phone: string;
+  institute: string;
+  section: Section | '';
+}
+export interface UnavailabilityRangeDto {
+  dayOfWeek: number;
+  startTime: string; // "HH:MM" or "HH:MM:SS" — Java LocalTime parses both
+  endTime: string;
+}
+export interface AvailabilityRangeDto {
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
 }

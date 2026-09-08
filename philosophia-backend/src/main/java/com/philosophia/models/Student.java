@@ -1,5 +1,6 @@
-
 package com.philosophia.models;
+
+import com.philosophia.enums.SectionEnum;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,9 +39,9 @@ public class Student {
     @Column(length = 255)
     private String institute;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "section_id")
-    private Section section;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "section", length = 50)
+    private SectionEnum section;
 
     @Column(name = "unpaid_sessions_count", nullable = false)
     private Integer unpaidSessionsCount = 0;
@@ -53,11 +54,7 @@ public class Student {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(
-            mappedBy = "student",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentUnavailability> unavailability = new ArrayList<>();
 
     @OneToMany(mappedBy = "student")

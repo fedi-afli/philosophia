@@ -25,43 +25,66 @@
       </div>
 
       <nav class="flex-1 px-4 py-6 space-y-2">
+
         <!-- Accueil -->
-<a
-        routerLink="/"
-        routerLinkActive="bg-slate-700"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
+        <a
+          routerLink="/"
+          routerLinkActive="bg-slate-700"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
         >
-        Accueil
+          Accueil
         </a>
 
-        <!-- Ajouter un élève — ADMIN only -->
-<a
-        *ngIf="authService.hasRole('ADMIN')"
-        routerLink="/eleve/ajout"
-        routerLinkActive="bg-slate-700"
-        class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
+        <!-- Nombre d'élèves — ADMIN only -->
+        <div
+          *ngIf="authService.hasRole('ADMIN') && studentCount !== null"
+          class="flex items-center justify-between px-4 py-3 rounded-lg bg-slate-800/60 text-stone-300 text-sm"
         >
-        Ajouter un élève
+          <span>Élèves inscrits</span>
+          <span class="font-serif text-lg text-stone-100">
+      {{ studentCount }}
+    </span>
+        </div>
+
+        <!-- Ajouter un élève — ADMIN only -->
+        <a
+          *ngIf="authService.hasRole('ADMIN')"
+          routerLink="/eleve/ajout"
+          routerLinkActive="bg-slate-700"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
+        >
+          Ajouter un élève
         </a>
 
         <!-- Programmer un chapitre — ADMIN only -->
-<a
-        *ngIf="authService.hasRole('ADMIN')"
-        routerLink="/chapitre/ajout"
-        routerLinkActive="bg-slate-700"
-        class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
+        <a
+          *ngIf="authService.hasRole('ADMIN')"
+          routerLink="/chapitre/ajout"
+          routerLinkActive="bg-slate-700"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
         >
-        Programmer un chapitre
+          Programmer un chapitre
+        </a>
+
+        <!-- Profil — STUDENT only -->
+        <a
+          *ngIf="authService.hasRole('STUDENT')"
+          routerLink="/profil"
+          routerLinkActive="bg-slate-700"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
+        >
+          Mon profil
         </a>
         <a
         *ngIf="authService.hasRole('STUDENT')"
-        routerLink="/profil"
+        routerLink="/disponibilites"
         routerLinkActive="bg-slate-700"
         class="flex items-center gap-3 px-4 py-3 rounded-lg text-stone-200 hover:bg-slate-800 transition-colors"
         >
-        Mon profil
+        Mes disponibilités
         </a>
+
       </nav>
     </aside>
 
@@ -105,4 +128,4 @@
 <ng-template #bareOutlet>
   <router-outlet></router-outlet>
 </ng-template>
-```
+

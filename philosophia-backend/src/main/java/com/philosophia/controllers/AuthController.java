@@ -52,6 +52,9 @@ public class AuthController {
             revoked.setExpiresAt(jwtService.extractExpiration(token));
             revokedTokenRepository.save(revoked);
         }
+        else{
+            return ResponseEntity.status(401).build();
+        }
 
         ResponseCookie expired = buildCookie("", 0);
 

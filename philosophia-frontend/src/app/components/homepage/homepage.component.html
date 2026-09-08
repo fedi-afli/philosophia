@@ -1,5 +1,4 @@
 <div class="flex flex-col gap-6">
-
   <div class="bg-stone-100 border border-stone-200/60 rounded-xl shadow-sm p-8 text-center relative overflow-hidden">
     <div class="absolute top-0 left-0 w-1 h-full bg-amber-700/50"></div>
     <h2 class="text-3xl font-serif italic text-stone-800 tracking-wide">
@@ -8,6 +7,20 @@
     <p class="text-stone-500 mt-2 font-medium">— René Descartes</p>
   </div>
 
-  <app-calendar></app-calendar>
+  <div *ngIf="authService.hasRole('ADMIN')" class="flex gap-4">
+    <button
+      (click)="ajouterEleve()"
+      class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 font-medium py-3 rounded-lg transition-colors"
+    >
+      Ajouter un élève
+    </button>
+    <button
+      (click)="programmerChapitre()"
+      class="flex-1 bg-amber-700 hover:bg-amber-600 text-stone-100 font-medium py-3 rounded-lg transition-colors"
+    >
+      Programmer un nouveau chapitre
+    </button>
+  </div>
 
+  <app-calendar [unavailability]="unavailability"></app-calendar>
 </div>

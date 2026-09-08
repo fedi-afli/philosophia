@@ -1,14 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface PhilosophySession {
   day: 'Lundi' | 'Mardi' | 'Mercredi' | 'Jeudi' | 'Vendredi' | 'Samedi' | 'Dimanche';
   studentName: string;
   chapterTopic: string;
-  startTime: number; // 24h format (e.g., 10.5 = 10:30)
-  duration: number;  // Hours (e.g., 1.5 = 1h30)
+  startTime: number;
+  duration: number;
   badgeColor: string;
 }
+
+export interface UnavailabilityBlock {
+  day: 'Lundi' | 'Mardi' | 'Mercredi' | 'Jeudi' | 'Vendredi' | 'Samedi' | 'Dimanche';
+  startTime: number;
+  duration: number;
+}
+
+const DAY_LABELS: Array<UnavailabilityBlock['day']> = [
+  'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche',
+];
 
 @Component({
   selector: 'app-calendar',
@@ -27,60 +37,36 @@ export class CalendarComponent {
     '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00'
   ];
 
-  // Static philosophy teaching sessions simulation
-  sessions: PhilosophySession[] = [
-    {
-      day: 'Lundi',
-      studentName: 'Jean M.',
-      chapterTopic: 'Ch. 3 - La Métaphysique de Descartes',
-      startTime: 10,
-      duration: 1.5,
-      badgeColor: 'bg-indigo-900 border-indigo-700'
-    },
-    {
-      day: 'Mardi',
-      studentName: 'Marie D.',
-      chapterTopic: 'Ch. 1 - Allégorie de la Caverne (Platon)',
-      startTime: 13.5,
-      duration: 2,
-      badgeColor: 'bg-rose-900 border-rose-700'
-    },
-    {
-      day: 'Mercredi',
-      studentName: 'Antoine S.',
-      chapterTopic: 'Ch. 5 - L\'Éthique de Kant',
-      startTime: 8.5,
-      duration: 2,
-      badgeColor: 'bg-stone-700 border-stone-600'
-    },
-    {
-      day: 'Jeudi',
-      studentName: 'Éléonore L.',
-      chapterTopic: 'Ch. 4 - Intro à l\'Existentialisme',
-      startTime: 16,
-      duration: 2,
-      badgeColor: 'bg-teal-900 border-teal-700'
-    },
-    {
-      day: 'Vendredi',
-      studentName: 'Sophie P.',
-      chapterTopic: 'Ch. 8 - Le Contrat Social (Rousseau)',
-      startTime: 11,
-      duration: 1.5,
-      badgeColor: 'bg-amber-800 border-amber-600'
-    },
-    {
-      day: 'Vendredi',
-      studentName: 'Sophie P.',
-      chapterTopic: 'Ch. 8 - Le Contrat Social (Rousseau)',
-      startTime: 17,
-      duration: 1.5,
-      badgeColor: 'bg-rose-900 border-rose-700'
-    }
+  @Input() sessions: PhilosophySession[] = [
+
   ];
+
+  // Grey unavailability blocks — set from outside via input, empty by default
+  @Input() set unavailability(ranges: { dayOfWeek: number; startTime: string; endTime: string }[]) {
+    this.unavailabilityBlocks = ranges.map((r) => {
+      const start = this.timeStringToDecimal(r.startTime);
+      const end = this.timeStringToDecimal(r.endTime);
+      return {
+        day: DAY_LABELS[r.dayOfWeek],
+        startTime: start,
+        duration: end - start,
+      };
+    });
+  }
+
+  unavailabilityBlocks: UnavailabilityBlock[] = [];
+
+  private timeStringToDecimal(time: string): number {
+    const [h, m] = time.split(':').map(Number);
+    return h + m / 60;
+  }
 
   getSessionsForDay(day: string): PhilosophySession[] {
     return this.sessions.filter(s => s.day === day);
+  }
+
+  getUnavailabilityForDay(day: string): UnavailabilityBlock[] {
+    return this.unavailabilityBlocks.filter(u => u.day === day);
   }
 
   formatTime(time: number): string {
