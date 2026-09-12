@@ -1,6 +1,8 @@
 package com.philosophia.services;
 
-import com.philosophia.dto.*;
+import com.philosophia.dto.calender_feature.*;
+import com.philosophia.dto.calender_feature.UnavailabilityRangeResponse;
+import com.philosophia.dto.student.*;
 import com.philosophia.enums.SectionEnum;
 import com.philosophia.enums.UserRole;
 
@@ -62,7 +64,7 @@ public class UserService {
         student.setLastName(req.lastName());
         student.setPhone(req.phone());
         student.setInstitute(req.institute());
-        // student.setSection(...); // set from req if CreateStudentRequest carries a section value
+        student.setSection(req.section());
 
         userRepository.save(user);
         studentRepository.save(student);
@@ -208,5 +210,50 @@ public class UserService {
         return teacherAvailabilityRepository.findAll().stream()
                 .map(a -> new AvailabilityRangeResponse(a.getId(), a.getDayOfWeek(), a.getStartTime(), a.getEndTime()))
                 .toList();
+    }
+    @Transactional(readOnly = true)
+    public List<StudentResponse> getAllStudents() {
+        return studentRepository.findAll().stream()
+                .map(student -> {
+                    String sectionName = student.getSection() != null ? student.getSection().name() : null;
+                    return new StudentResponse(
+                            student.getId(),
+                            student.getUser().getUsername(),
+                            student.getFirstName(),
+                            student.getLastName(),
+                            student.getPhone(),
+                            null,
+                            student.getInstitute(),
+                            sectionName,
+                            student.getUnpaidSessionsCount()
+                    );
+                })
+                .toList();
+    }
+
+    @Transactional
+    public StudentResponse adminUpdateStudent(Long studentId, AdminUpdateStudentRequest req) {
+        Student student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new UserNotFoundException(studentId));
+
+        if (req.firstName() != null && !req.firstName().isBlank()) {
+            student.setFirstName(req.firstName());
+        }
+        if (req.lastName() != null && !req.lastName().isBlank()) {
+            student.setLastName(req.lastName());
+        }
+        if (req.phone() != null && !req.phone().isBlank()) {
+            student.setPhone(req.phone());
+        }
+        if (req.institute() != null && !req.institute().isBlank()) {
+            student.setInstitute(req.institute());
+        }
+        if (req.section() != null) {
+            student.setSection(req.section());
+        }
+
+        studentRepository.save(student);
+
+        return getStudentProfile(student.getUser());
     }
 }

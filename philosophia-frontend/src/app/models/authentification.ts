@@ -1,3 +1,6 @@
+import {Section} from "./section";
+import {StudentResponse} from "./student";
+
 export interface Credentials {
   username: string;
   password: string;
@@ -14,21 +17,11 @@ export interface CreateStudentRequest {
   password: string;
   phone?: string;
   institute?: string;
-  sectionId?: number | null;
+  section:Section;
 }
 
 // Matches backend StudentResponse record exactly
-export interface StudentResponse {
-  id: number;
-  username: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email: string;
-  institute: string;
-  section: Section;
-  unpaidSession: number;
-}
+
 
 export interface LoginRequest {
   username: string;
@@ -49,11 +42,9 @@ export interface CurrentUser {
 }
 
 
-export interface StudentCountResponse {
-  studentCount: number;
-}
 
-export type Section = 'SCIENTIFIQUE' | 'LITTERAIRE';
+
+
 
 export interface ModifyProfileRequest {
   phone: string;
@@ -69,4 +60,40 @@ export interface AvailabilityRangeDto {
   dayOfWeek: number;
   startTime: string;
   endTime: string;
+}
+
+
+
+
+export interface TeachingPlanResponse {
+  id: number;
+  chapterName: string;
+  type: string;
+  section: string;
+  durationWeeks: number;
+  sessionsPerWeek: number;
+  sessionDurationMinutes: number;
+  maxStudents: number;
+  startDate: string;
+  status: string;
+  enrolledStudents: number;
+}
+
+
+export interface UnscheduledStudent {
+  studentId: number;
+  studentName: string;
+  weekNumber: number;
+  reason: string;
+}
+
+
+
+
+export interface AdminUpdateStudentRequest {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  institute: string;
+  section: Section;
 }

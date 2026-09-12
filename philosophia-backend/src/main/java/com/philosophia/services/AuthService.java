@@ -1,8 +1,8 @@
 package com.philosophia.services;
 
-import com.philosophia.dto.LoginRequest;
-import com.philosophia.dto.LoginResponse;
-import com.philosophia.dto.StudentResponse;
+import com.philosophia.dto.authentification.LoginRequest;
+import com.philosophia.dto.authentification.LoginResponse;
+import com.philosophia.dto.student.StudentResponse;
 import com.philosophia.enums.UserRole;
 import com.philosophia.exceptions.InvalidCredentialsException;
 import com.philosophia.exceptions.UserNotFoundException;

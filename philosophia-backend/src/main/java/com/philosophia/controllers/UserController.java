@@ -1,8 +1,13 @@
 package com.philosophia.controllers;
 
-import com.philosophia.dto.*;
-import com.philosophia.enums.UserRole;
-import com.philosophia.models.User;
+import com.philosophia.dto.authentification.CheckUsernameResponse;
+import com.philosophia.dto.authentification.CredentialsResponse;
+import com.philosophia.dto.authentification.GenerateCredentialsRequest;
+import com.philosophia.dto.calender_feature.AvailabilityRangeResponse;
+import com.philosophia.dto.calender_feature.UpdateAvailabilityRequest;
+import com.philosophia.dto.calender_feature.UpdateUnavailabilityRequest;
+import com.philosophia.dto.calender_feature.UnavailabilityRangeResponse;
+import com.philosophia.dto.student.*;
 import com.philosophia.services.CredentialGeneratorService;
 import com.philosophia.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +55,6 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<StudentCountResponse> getStudentCount(Authentication authentication) {
         Long authUserId = Long.valueOf(authentication.getName());
-        User currentUser = userService.findById(authUserId);
         return ResponseEntity.ok(this.userService.getStudentCount());
     }
 
@@ -88,5 +92,18 @@ public class UserController {
     public ResponseEntity<List<AvailabilityRangeResponse>> updateTeacherAvailability(
             @RequestBody UpdateAvailabilityRequest request) {
         return ResponseEntity.ok(userService.updateTeacherAvailability(request));
+    }
+    @GetMapping("/students")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<StudentResponse>> getAllStudents() {
+        return ResponseEntity.ok(userService.getAllStudents());
+    }
+
+    @PutMapping("/students/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<StudentResponse> adminUpdateStudent(
+            @PathVariable Long id,
+            @RequestBody AdminUpdateStudentRequest request) {
+        return ResponseEntity.ok(userService.adminUpdateStudent(id, request));
     }
 }

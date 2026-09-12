@@ -3,12 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import {
+  AdminUpdateStudentRequest,
   CheckUsernameResponse,
   CreateStudentRequest,
   Credentials,
-  StudentCountResponse,
-  StudentResponse
+
 } from "../models/authentification";
+import {StudentCountResponse, StudentResponse} from "../models/student";
 
 
 
@@ -36,5 +37,12 @@ export class StudentService {
   }
   getStudentCount(): Observable<StudentCountResponse> {
     return this.http.get<StudentCountResponse>(`${this.baseUrl}/studentCount`, { withCredentials: true });
+  }
+  getAllStudents(): Observable<StudentResponse[]> {
+    return this.http.get<StudentResponse[]>(`${this.baseUrl}/students`, { withCredentials: true });
+  }
+
+  adminUpdateStudent(id: number, payload: AdminUpdateStudentRequest): Observable<StudentResponse> {
+    return this.http.put<StudentResponse>(`${this.baseUrl}/students/${id}`, payload, { withCredentials: true });
   }
 }

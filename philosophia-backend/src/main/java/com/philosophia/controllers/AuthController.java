@@ -1,7 +1,7 @@
 package com.philosophia.controllers;
 
-import com.philosophia.dto.LoginRequest;
-import com.philosophia.dto.LoginResponse;
+import com.philosophia.dto.authentification.LoginRequest;
+import com.philosophia.dto.authentification.LoginResponse;
 import com.philosophia.exceptions.InvalidCredentialsException;
 import com.philosophia.models.RevokedToken;
 import com.philosophia.repository.RevokedTokenRepository;

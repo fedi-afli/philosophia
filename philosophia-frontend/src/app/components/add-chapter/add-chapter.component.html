@@ -1,1 +1,182 @@
-<p>add-chapter works!</p>
+<div class="max-w-2xl mx-auto bg-white border border-stone-200 rounded-xl shadow-sm p-8">
+
+  <!-- SUCCESS STATE -->
+  <div *ngIf="saveSucceeded" class="space-y-6">
+    <div class="text-center space-y-4">
+      <div class="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-serif text-stone-800">Chapitre programmé avec succès</h3>
+      <p class="text-sm text-stone-500">
+        "{{ createdPlan?.chapterName }}" a été créé et {{ createdPlan?.enrolledStudents }} élève(s) ont été inscrits.
+      </p>
+    </div>
+
+    <!-- Schedule generation trigger -->
+    <div *ngIf="!scheduleResult" class="border-t border-stone-200 pt-6 text-center space-y-3">
+      <p class="text-sm text-stone-500">Prêt à générer le planning des séances pour ce chapitre ?</p>
+      <button
+        (click)="generateSchedule()"
+        [disabled]="isScheduling"
+        class="bg-amber-700 hover:bg-amber-600 text-stone-100 font-medium py-2.5 px-6 rounded-lg transition-colors disabled:opacity-50"
+      >
+        {{ isScheduling ? 'Génération en cours...' : 'Générer le planning' }}
+      </button>
+      <p *ngIf="scheduleError" class="text-sm text-red-500">{{ scheduleError }}</p>
+    </div>
+
+    <!-- Schedule results -->
+    <div *ngIf="scheduleResult" class="border-t border-stone-200 pt-6 space-y-4">
+      <p class="text-xs uppercase tracking-wide text-stone-500">
+        {{ scheduleResult.sessions.length }} séance(s) créée(s)
+      </p>
+
+      <div class="space-y-2 max-h-64 overflow-y-auto">
+        <div
+          *ngFor="let s of scheduleResult.sessions"
+          class="border border-stone-200 rounded-lg p-3 text-sm bg-stone-50"
+        >
+          <div class="flex justify-between items-center">
+            <span class="font-medium text-stone-700">
+              Semaine {{ s.weekNumber }} · {{ s.sessionDate }} · {{ formatTime(s.startTime) }}–{{ formatTime(s.endTime) }}
+            </span>
+            <span class="text-xs text-stone-400">{{ s.assignedCount }}/{{ s.capacity }}</span>
+          </div>
+          <p class="text-stone-500 text-xs mt-1 truncate">{{ s.assignedStudentNames.join(', ') }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="scheduleResult.unscheduledStudents.length > 0" class="border-t border-stone-200 pt-4">
+        <p class="text-xs uppercase tracking-wide text-red-500 mb-2">
+          Élèves non planifiés
+        </p>
+        <div class="space-y-1">
+          <p
+            *ngFor="let u of scheduleResult.unscheduledStudents"
+            class="text-sm text-stone-600"
+          >
+            {{ u.studentName }} — semaine {{ u.weekNumber }} : <span class="text-stone-400">{{ u.reason }}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <button
+        (click)="addAnother()"
+        class="flex-1 border border-stone-300 rounded-lg py-2.5 text-stone-600 hover:bg-stone-50"
+      >
+        Ajouter un autre
+      </button>
+      <button
+        (click)="goHome()"
+        class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 rounded-lg py-2.5"
+      >
+        Retour à l'accueil
+      </button>
+    </div>
+  </div>
+
+  <!-- FORM STATE -->
+  <ng-container *ngIf="!saveSucceeded">
+    <h3 class="text-lg font-serif text-stone-800 mb-1">Programmer un nouveau chapitre</h3>
+    <p class="text-sm text-stone-500 mb-6">
+      Le chapitre sera automatiquement assigné aux élèves de la section choisie.
+    </p>
+
+    <div class="space-y-4">
+      <div>
+        <label class="text-xs uppercase tracking-wide text-stone-500">Nom du chapitre</label>
+        <input
+          [(ngModel)]="form.chapterName"
+          type="text"
+          placeholder="La Métaphysique, Ch. 3"
+          class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+        />
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs uppercase tracking-wide text-stone-500">Type</label>
+          <select
+            [(ngModel)]="form.type"
+            class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 bg-white"
+          >
+            <option value="COURS">Cours</option>
+            <option value="TP">TP</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-wide text-stone-500">Section</label>
+          <select
+            [(ngModel)]="form.section"
+            class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 bg-white"
+          >
+            <option value="SCIENTIFIQUE">Scientifique</option>
+            <option value="LITTERAIRE">Littéraire</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="text-xs uppercase tracking-wide text-stone-500">Durée (semaines)</label>
+          <input
+            [(ngModel)]="form.durationWeeks"
+            type="number"
+            min="1"
+            class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2"
+          />
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-wide text-stone-500">Séances / semaine</label>
+          <input
+            [(ngModel)]="form.sessionsPerWeek"
+            type="number"
+            min="1"
+            class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-wide text-stone-500">Max élèves / séance</label>
+        <input
+          [(ngModel)]="form.maxStudents"
+          type="number"
+          min="1"
+          class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2"
+        />
+      </div>
+
+      <div>
+        <label class="text-xs uppercase tracking-wide text-stone-500">Date de début</label>
+        <input
+          [(ngModel)]="form.startDate"
+          type="date"
+          class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2"
+        />
+      </div>
+
+      <p *ngIf="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
+
+      <div class="flex gap-3 pt-2">
+        <button
+          (click)="goHome()"
+          class="flex-1 border border-stone-300 rounded-lg py-2.5 text-stone-600 hover:bg-stone-50"
+        >
+          Annuler
+        </button>
+        <button
+          (click)="save()"
+          [disabled]="!isFormValid || isSaving"
+          class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 rounded-lg py-2.5 disabled:opacity-50"
+        >
+          {{ isSaving ? 'Création...' : 'Programmer le chapitre' }}
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>

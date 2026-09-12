@@ -53,6 +53,20 @@
             <input [(ngModel)]="institute" type="text" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
           </div>
         </div>
+        <!-- Section -->
+        <div>
+          <label class="text-xs uppercase tracking-wide text-stone-500">
+            Section
+          </label>
+
+          <select
+            [(ngModel)]="section"
+            class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-slate-700"
+          >
+            <option value="SCIENTIFIQUE">Scientifique</option>
+            <option value="LITTERAIRE">Littéraire</option>
+          </select>
+        </div>
 
         <button
           (click)="generate()"

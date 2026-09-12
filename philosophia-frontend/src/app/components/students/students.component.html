@@ -1,0 +1,127 @@
+<div class="max-w-4xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-serif text-stone-800">Élèves</h2>
+    <button
+      (click)="goToAddStudent()"
+      class="bg-slate-800 hover:bg-slate-700 text-stone-100 font-medium py-2.5 px-5 rounded-lg transition-colors"
+    >
+      Ajouter un élève
+    </button>
+  </div>
+
+  <!-- Search + filters -->
+  <div class="bg-white border border-stone-200 rounded-xl shadow-sm p-4 flex flex-wrap gap-3 items-center">
+    <input
+      [(ngModel)]="searchTerm"
+      type="text"
+      placeholder="Rechercher par nom ou identifiant..."
+      class="flex-1 min-w-[200px] border border-stone-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+    />
+
+    <select
+      [(ngModel)]="sectionFilter"
+      class="border border-stone-300 rounded-lg px-3 py-2 bg-white"
+    >
+      <option value="">Toutes les sections</option>
+      <option value="SCIENTIFIQUE">Scientifique</option>
+      <option value="LITTERAIRE">Littéraire</option>
+    </select>
+
+    <select
+      [(ngModel)]="instituteFilter"
+      class="border border-stone-300 rounded-lg px-3 py-2 bg-white"
+    >
+      <option value="">Tous les lycées</option>
+      <option *ngFor="let inst of uniqueInstitutes" [value]="inst">{{ inst }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="isLoading" class="text-sm text-stone-400 py-12 text-center">
+    Chargement des élèves...
+  </div>
+
+  <p *ngIf="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
+
+  <div *ngIf="!isLoading && filteredStudents.length === 0" class="text-sm text-stone-400 py-12 text-center">
+    Aucun élève ne correspond à ces critères.
+  </div>
+
+  <div class="space-y-3">
+    <div
+      *ngFor="let student of filteredStudents"
+      class="bg-white border border-stone-200 rounded-xl shadow-sm p-6"
+    >
+      <!-- READ-ONLY ROW -->
+      <div *ngIf="editingId !== student.id" class="flex items-center justify-between">
+        <div>
+          <p class="font-serif text-lg text-stone-800">{{ student.firstName }} {{ student.lastName }}</p>
+          <p class="text-sm text-stone-500 mt-1">
+            {{ student.username }} · {{ student.section === 'SCIENTIFIQUE' ? 'Scientifique' : (student.section === 'LITTERAIRE' ? 'Littéraire' : '—') }}
+            <span *ngIf="student.institute"> · {{ student.institute }}</span>
+          </p>
+          <p class="text-xs text-stone-400 mt-1">
+            <span *ngIf="student.phone">{{ student.phone }} · </span>
+            {{ student.unpaidSession }} séance(s) impayée(s)
+          </p>
+        </div>
+        <button
+          (click)="startEdit(student)"
+          class="text-sm font-medium text-stone-600 hover:text-stone-900 border border-stone-300 rounded-lg px-4 py-2 transition-colors"
+        >
+          Modifier
+        </button>
+      </div>
+
+      <!-- EDIT FORM -->
+      <div *ngIf="editingId === student.id" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Prénom</label>
+            <input [(ngModel)]="editForm.firstName" type="text" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Nom</label>
+            <input [(ngModel)]="editForm.lastName" type="text" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Téléphone</label>
+            <input [(ngModel)]="editForm.phone" type="text" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Établissement</label>
+            <input [(ngModel)]="editForm.institute" type="text" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs uppercase tracking-wide text-stone-500">Section</label>
+          <select [(ngModel)]="editForm.section" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 bg-white">
+            <option value="SCIENTIFIQUE">Scientifique</option>
+            <option value="LITTERAIRE">Littéraire</option>
+          </select>
+        </div>
+
+        <p *ngIf="editError" class="text-sm text-red-500">{{ editError }}</p>
+
+        <div class="flex gap-3 pt-2">
+          <button
+            (click)="cancelEdit()"
+            class="flex-1 border border-stone-300 rounded-lg py-2.5 text-stone-600 hover:bg-stone-50"
+          >
+            Annuler
+          </button>
+          <button
+            (click)="saveEdit()"
+            [disabled]="!isEditFormValid || isSaving"
+            class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 rounded-lg py-2.5 disabled:opacity-50"
+          >
+            {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

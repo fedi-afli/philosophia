@@ -2,9 +2,10 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
-import {  Credentials} from "../../models/authentification";
-import {Router} from "@angular/router";
-import {StudentService} from "../../services/student.service";
+import { Credentials} from "../../models/authentification";
+import { Router } from "@angular/router";
+import { StudentService } from "../../services/student.service";
+import {Section} from "../../models/section";
 
 @Component({
   selector: 'app-add-student',
@@ -19,6 +20,7 @@ export class AddStudentComponent {
   fullName = '';
   phone = '';
   institute = '';
+  section: Section = 'SCIENTIFIQUE';
 
   credentials: Credentials | null = null;
   usernameStatus: 'idle' | 'checking' | 'available' | 'taken' = 'idle';
@@ -31,7 +33,7 @@ export class AddStudentComponent {
 
   private usernameCheck$ = new Subject<string>();
 
-  constructor(private studentService: StudentService,private router : Router) {
+  constructor(private studentService: StudentService, private router: Router) {
     this.usernameCheck$
       .pipe(
         debounceTime(400),
@@ -119,13 +121,14 @@ export class AddStudentComponent {
         password: this.credentials.password,
         phone: this.phone,
         institute: this.institute,
+        section: this.section,
       })
       .subscribe({
         next: (response) => {
           this.isSaving = false;
           this.saveSucceeded = true;
           this.savedStudentName = `${response.firstName} ${response.lastName}`;
-          this.created.emit(); // let parent refresh its list now, modal stays open for confirmation
+          this.created.emit();
         },
         error: (err) => {
           this.isSaving = false;
@@ -139,16 +142,13 @@ export class AddStudentComponent {
       });
   }
 
-  // Explicit dismissal — only way to close after a successful save
   finish(): void {
     this.router.navigate(['/']);
   }
 
   close(): void {
-    // block accidental backdrop-click dismissal once a save is in flight or just succeeded
     if (this.isSaving) return;
     this.closed.emit();
     this.router.navigate(['/']);
   }
-
 }

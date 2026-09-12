@@ -9,16 +9,16 @@
 
   <div *ngIf="authService.hasRole('ADMIN')" class="flex gap-4">
     <button
-      (click)="ajouterEleve()"
+      (click)="GoToEleve()"
       class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 font-medium py-3 rounded-lg transition-colors"
     >
-      Ajouter un élève
+      Mes élèves
     </button>
     <button
-      (click)="programmerChapitre()"
+      (click)="GoToChapitre()"
       class="flex-1 bg-amber-700 hover:bg-amber-600 text-stone-100 font-medium py-3 rounded-lg transition-colors"
     >
-      Programmer un nouveau chapitre
+      Mes chapitres
     </button>
   </div>
 

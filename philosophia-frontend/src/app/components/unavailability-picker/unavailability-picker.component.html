@@ -4,7 +4,7 @@
   (mouseleave)="onMouseUp()"
 >
   <div class="flex items-center justify-between mb-2">
-    <h2 class="text-2xl font-serif text-stone-800">Mes disponibilités</h2>
+    <h2 class="text-2xl font-serif text-stone-800">Mes indisponibilités</h2>
     <button
       (click)="clearAll()"
       class="text-xs uppercase tracking-wide text-stone-400 hover:text-stone-600 transition-colors"
@@ -12,23 +12,30 @@
       Tout effacer
     </button>
   </div>
-  <p class="text-sm text-stone-500 mb-6">
-    Cliquez et glissez sur les créneaux où vous êtes disponible pour donner des cours.
+  <p class="text-sm text-stone-500 mb-1">
+    Cliquez et glissez sur les créneaux où vous n'êtes <span class="font-medium text-stone-700">pas disponible</span> pour donner des cours.
   </p>
 
-  <div *ngIf="isLoading" class="text-sm text-stone-400 py-12 text-center">
-    Chargement de vos disponibilités...
+  <div class="flex items-center gap-2 mb-6">
+    <span class="inline-block w-3 h-3 rounded-sm bg-slate-700"></span>
+    <span class="text-xs text-stone-400">Indisponible</span>
+    <span class="inline-block w-3 h-3 rounded-sm bg-white border border-stone-300 ml-4"></span>
+    <span class="text-xs text-stone-400">Disponible</span>
   </div>
 
-  <div *ngIf="!isLoading" class="overflow-x-auto select-none">
+  <div *ngIf="isLoading" class="text-sm text-stone-400 py-12 text-center">
+    Chargement de vos indisponibilités...
+  </div>
+
+  <div *ngIf="!isLoading" class="overflow-x-auto select-none rounded-lg border border-stone-200">
     <div
-      class="grid gap-px bg-stone-200 rounded-lg overflow-hidden"
+      class="grid gap-px bg-stone-200"
       style="grid-template-columns: 56px repeat(7, minmax(70px, 1fr));"
     >
-      <div class="bg-white"></div>
+      <div class="bg-stone-50 sticky top-0 z-10"></div>
       <div
         *ngFor="let day of days"
-        class="bg-white text-center py-2 text-xs font-medium uppercase tracking-wide text-stone-500"
+        class="bg-stone-50 sticky top-0 z-10 text-center py-2.5 text-xs font-semibold uppercase tracking-wide text-stone-600 border-b border-stone-200"
       >
         {{ day }}
       </div>
@@ -43,7 +50,8 @@
           (mousedown)="onCellMouseDown(dayIndex, slot, $event)"
           (mouseenter)="onCellMouseEnter(dayIndex, slot)"
           class="cursor-pointer transition-colors"
-          [class.bg-emerald-600]="grid[dayIndex][slot]"
+          [class.bg-slate-700]="grid[dayIndex][slot]"
+          [class.hover:bg-slate-600]="grid[dayIndex][slot]"
           [class.bg-white]="!grid[dayIndex][slot]"
           [class.hover:bg-stone-100]="!grid[dayIndex][slot]"
           [class.border-t]="isHourStart(slot)"
@@ -55,14 +63,14 @@
   </div>
 
   <div *ngIf="ranges.length > 0" class="mt-6 pt-4 border-t border-stone-200">
-    <p class="text-xs uppercase tracking-wide text-stone-500 mb-3">Récapitulatif</p>
+    <p class="text-xs uppercase tracking-wide text-stone-500 mb-3">Récapitulatif des indisponibilités</p>
     <div class="flex flex-wrap gap-2">
       <span
         *ngFor="let r of ranges"
-        class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-full px-3 py-1 text-sm text-emerald-800"
+        class="inline-flex items-center gap-2 bg-stone-100 border border-stone-300 rounded-full px-3 py-1 text-sm text-stone-700"
       >
         {{ r.dayLabel }} · {{ r.startTime }}–{{ r.endTime }}
-        <button (click)="removeRange(r)" class="text-emerald-400 hover:text-red-500 leading-none">×</button>
+        <button (click)="removeRange(r)" class="text-stone-400 hover:text-red-500 leading-none">×</button>
       </span>
     </div>
   </div>

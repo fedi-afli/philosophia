@@ -1,0 +1,118 @@
+<div class="max-w-3xl mx-auto space-y-6">
+  <div class="flex items-center justify-between">
+    <h2 class="text-2xl font-serif text-stone-800">Chapitres</h2>
+    <button
+      (click)="goToAddChapter()"
+      class="bg-slate-800 hover:bg-slate-700 text-stone-100 font-medium py-2.5 px-5 rounded-lg transition-colors"
+    >
+      Ajouter un chapitre
+    </button>
+  </div>
+
+  <div *ngIf="isLoading" class="text-sm text-stone-400 py-12 text-center">
+    Chargement des chapitres...
+  </div>
+
+  <p *ngIf="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
+
+  <div *ngIf="!isLoading && chapters.length === 0" class="text-sm text-stone-400 py-12 text-center">
+    Aucun chapitre programmé pour l'instant.
+  </div>
+
+  <div class="space-y-3">
+    <div
+      *ngFor="let chapter of chapters"
+      class="bg-white border border-stone-200 rounded-xl shadow-sm p-6"
+    >
+      <!-- READ-ONLY ROW -->
+      <div *ngIf="editingId !== chapter.id" class="flex items-center justify-between">
+        <div>
+          <p class="font-serif text-lg text-stone-800">{{ chapter.chapterName }}</p>
+          <p class="text-sm text-stone-500 mt-1">
+            {{ chapter.type === 'COURS' ? 'Cours' : 'TP' }} · {{ chapter.section === 'SCIENTIFIQUE' ? 'Scientifique' : 'Littéraire' }}
+            · {{ chapter.durationWeeks }} semaine(s) · {{ chapter.sessionsPerWeek }} séance(s)/semaine
+            · max {{ chapter.maxStudents }} élèves
+          </p>
+          <p class="text-xs text-stone-400 mt-1">
+            Début : {{ chapter.startDate }} · {{ chapter.enrolledStudents }} élève(s) concerné(s) · Statut : {{ chapter.status }}
+          </p>
+        </div>
+        <button
+          (click)="startEdit(chapter)"
+          class="text-sm font-medium text-stone-600 hover:text-stone-900 border border-stone-300 rounded-lg px-4 py-2 transition-colors"
+        >
+          Modifier
+        </button>
+      </div>
+
+      <!-- EDIT FORM -->
+      <div *ngIf="editingId === chapter.id" class="space-y-4">
+        <div>
+          <label class="text-xs uppercase tracking-wide text-stone-500">Nom du chapitre</label>
+          <input
+            [(ngModel)]="editForm.chapterName"
+            type="text"
+            class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-700"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Type</label>
+            <select [(ngModel)]="editForm.type" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 bg-white">
+              <option value="COURS">Cours</option>
+              <option value="TP">TP</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Section</label>
+            <select [(ngModel)]="editForm.section" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2 bg-white">
+              <option value="SCIENTIFIQUE">Scientifique</option>
+              <option value="LITTERAIRE">Littéraire</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Durée (semaines)</label>
+            <input [(ngModel)]="editForm.durationWeeks" type="number" min="1" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Séances / semaine</label>
+            <input [(ngModel)]="editForm.sessionsPerWeek" type="number" min="1" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Max élèves / séance</label>
+            <input [(ngModel)]="editForm.maxStudents" type="number" min="1" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="text-xs uppercase tracking-wide text-stone-500">Date de début</label>
+            <input [(ngModel)]="editForm.startDate" type="date" class="w-full mt-1 border border-stone-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <p *ngIf="editError" class="text-sm text-red-500">{{ editError }}</p>
+
+        <div class="flex gap-3 pt-2">
+          <button
+            (click)="cancelEdit()"
+            class="flex-1 border border-stone-300 rounded-lg py-2.5 text-stone-600 hover:bg-stone-50"
+          >
+            Annuler
+          </button>
+          <button
+            (click)="saveEdit()"
+            [disabled]="!isEditFormValid || isSaving"
+            class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 rounded-lg py-2.5 disabled:opacity-50"
+          >
+            {{ isSaving ? 'Enregistrement...' : 'Enregistrer' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

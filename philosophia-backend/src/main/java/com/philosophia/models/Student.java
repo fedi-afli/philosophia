@@ -57,8 +57,7 @@ public class Student {
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StudentUnavailability> unavailability = new ArrayList<>();
 
-    @OneToMany(mappedBy = "student")
-    private List<TeachingPlanStudent> teachingPlans = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "student")
     private List<SessionStudent> sessions = new ArrayList<>();

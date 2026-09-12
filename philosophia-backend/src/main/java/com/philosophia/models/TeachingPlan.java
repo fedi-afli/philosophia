@@ -1,5 +1,6 @@
 package com.philosophia.models;
 
+import com.philosophia.enums.SectionEnum;
 import com.philosophia.enums.TeachingPlanStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -24,31 +25,19 @@ public class TeachingPlan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "chapter_name", nullable = false, length = 255)
-    private String chapterName;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "section_id", nullable = false)
-    private Section section;
+    @JoinColumn(name = "chapter_id", nullable = false)
+    private Chapter chapter;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 50)
+    private SectionEnum section;
 
     @Column(name = "duration_weeks", nullable = false)
     private Integer durationWeeks;
 
-    /**
-     * Number of sessions required per student per week.
-     *
-     * Example:
-     * 20 students + max 8 students/session
-     * -> scheduler may create 3 sessions in the same week.
-     *
-     * This value describes the requirement for each student,
-     * not the total number of sessions.
-     */
     @Column(name = "sessions_per_week", nullable = false)
     private Integer sessionsPerWeek = 1;
-
-    @Column(name = "session_duration_minutes", nullable = false)
-    private Integer sessionDurationMinutes;
 
     @Column(name = "max_students", nullable = false)
     private Integer maxStudents;
@@ -68,12 +57,22 @@ public class TeachingPlan {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(
-            mappedBy = "teachingPlan",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<TeachingPlanStudent> students = new ArrayList<>();
+    @Override
+    public String toString() {
+        return "TeachingPlan{" +
+                "id=" + id +
+                ", chapter=" + chapter +
+                ", section=" + section +
+                ", durationWeeks=" + durationWeeks +
+                ", sessionsPerWeek=" + sessionsPerWeek +
+                ", maxStudents=" + maxStudents +
+                ", startDate=" + startDate +
+                ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", sessions=" + sessions +
+                '}';
+    }
 
     @OneToMany(
             mappedBy = "teachingPlan",

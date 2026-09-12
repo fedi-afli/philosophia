@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from "../../services/authentification.service";
 import { ProfileService } from '../../services/profile.service';
-import { StudentResponse, ModifyProfileRequest } from '../../models/authentification';
+import {  ModifyProfileRequest } from '../../models/authentification';
+import {StudentResponse} from "../../models/student";
 
 @Component({
   selector: 'app-my-profile',

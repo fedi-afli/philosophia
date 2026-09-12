@@ -31,11 +31,11 @@ export class HomepageComponent implements OnInit {
     }
   }
 
-  ajouterEleve(): void {
-    this.router.navigate(['eleve/ajout']);
+  GoToEleve(): void {
+    this.router.navigate(['eleve']);
   }
 
-  programmerChapitre(): void {
-    this.router.navigate(['chapitre/ajout']);
+ GoToChapitre(): void {
+    this.router.navigate(['chapitre']);
   }
 }
