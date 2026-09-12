@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { MySession, ScheduledSession } from "../models/session";
+import {ConfirmAttendanceRequest, MySession, ScheduledSession, SessionDetail} from "../models/session";
 
 @Injectable({ providedIn: 'root' })
 export class SessionsService {
@@ -16,5 +16,13 @@ export class SessionsService {
 
   getAllSessions(): Observable<ScheduledSession[]> {
     return this.http.get<ScheduledSession[]>(this.baseUrl, { withCredentials: true });
+  }
+
+  getSessionDetail(sessionId: number): Observable<SessionDetail> {
+    return this.http.get<SessionDetail>(`${this.baseUrl}/${sessionId}`, { withCredentials: true });
+  }
+
+  confirmAttendance(sessionId: number, payload: ConfirmAttendanceRequest): Observable<void> {
+    return this.http.post<void>(`${this.baseUrl}/${sessionId}/attendance`, payload, { withCredentials: true });
   }
 }

@@ -1,0 +1,68 @@
+<div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50" (click)="close()">
+  <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6" (click)="$event.stopPropagation()">
+
+    <div *ngIf="isLoading" class="text-sm text-stone-400 py-8 text-center">
+      Chargement...
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div *ngIf="!isLoading && saveSucceeded" class="text-center space-y-4">
+      <div class="mx-auto w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+      </div>
+      <h3 class="text-lg font-serif text-stone-800">Présences enregistrées</h3>
+      <p class="text-sm text-stone-500">
+        {{ detail?.students?.length }} élève(s) mis à jour pour cette séance.
+      </p>
+      <button (click)="close()" class="w-full bg-slate-800 hover:bg-slate-700 text-stone-100 rounded-lg py-2.5">
+        Fermer
+      </button>
+    </div>
+
+    <!-- FORM STATE -->
+    <div *ngIf="!isLoading && !saveSucceeded && detail" class="space-y-4">
+      <div>
+        <h3 class="text-lg font-serif text-stone-800">{{ detail.chapterName }}</h3>
+        <p class="text-sm text-stone-500">{{ detail.sessionDate }} · {{ detail.startTime.slice(0,5) }}–{{ detail.endTime.slice(0,5) }}</p>
+      </div>
+
+      <p class="text-xs uppercase tracking-wide text-stone-500">
+        Cochez uniquement les élèves absents — les autres sont considérés présents.
+      </p>
+
+      <div class="space-y-2 max-h-64 overflow-y-auto">
+        <label
+          *ngFor="let s of detail.students"
+          class="flex items-center justify-between border border-stone-200 rounded-lg px-4 py-3 cursor-pointer transition-colors"
+          [class.bg-red-50]="absentMap[s.studentId]"
+          [class.border-red-200]="absentMap[s.studentId]"
+        >
+          <span class="text-sm text-stone-700">{{ s.studentName }}</span>
+          <input
+            type="checkbox"
+            [checked]="absentMap[s.studentId]"
+            (change)="toggleAbsent(s.studentId)"
+            class="w-4 h-4 accent-red-600"
+          />
+        </label>
+      </div>
+
+      <p *ngIf="errorMessage" class="text-sm text-red-500">{{ errorMessage }}</p>
+
+      <div class="flex gap-3 pt-2">
+        <button (click)="close()" class="flex-1 border border-stone-300 rounded-lg py-2.5 text-stone-600 hover:bg-stone-50">
+          Annuler
+        </button>
+        <button
+          (click)="confirm()"
+          [disabled]="isSaving"
+          class="flex-1 bg-slate-800 hover:bg-slate-700 text-stone-100 rounded-lg py-2.5 disabled:opacity-50"
+        >
+          {{ isSaving ? 'Enregistrement...' : 'Confirmer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

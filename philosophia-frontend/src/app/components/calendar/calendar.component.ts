@@ -4,9 +4,10 @@ import { CommonModule } from '@angular/common';
 import { SessionsService } from "../../services/sessions.service";
 import { MySession, ScheduledSession } from "../../models/session";
 import { AuthService } from "../../services/authentification.service";
+import {AttendanceModalComponent} from "../attendance-modal/attendance-modal.component";
 
 export interface PhilosophySession {
-  date: string; // ISO "YYYY-MM-DD" — the real calendar date this session falls on
+  date: string;
   day: 'Lundi' | 'Mardi' | 'Mercredi' | 'Jeudi' | 'Vendredi' | 'Samedi' | 'Dimanche';
   studentName: string;
   chapterTopic: string;
@@ -15,6 +16,7 @@ export interface PhilosophySession {
   badgeColor: string;
   weekNumber?: number;
   sessionNumber?: number;
+  sessionId?: number; // present only for admin-loaded sessions — click opens attendance modal
 }
 
 export interface UnavailabilityBlock {
@@ -34,7 +36,7 @@ const BADGE_PALETTE = [
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AttendanceModalComponent],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
@@ -133,6 +135,7 @@ export class CalendarComponent implements OnInit {
     };
   }
 
+// remove studentName from toPhilosophySessionFromAdmin, keep only the count
   private toPhilosophySessionFromAdmin(session: ScheduledSession): PhilosophySession {
     const start = this.timeStringToDecimal(session.startTime);
     const end = this.timeStringToDecimal(session.endTime);
@@ -141,13 +144,14 @@ export class CalendarComponent implements OnInit {
     return {
       date: session.sessionDate,
       day: this.dayLabelFromDate(session.sessionDate),
-      studentName: `${session.assignedCount}/${session.capacity} · ${session.assignedStudentNames.join(', ')}`,
+      studentName: `${session.assignedCount}/${session.capacity} élève(s)`,
       chapterTopic: chapterKey,
       startTime: start,
       duration: end - start,
       badgeColor: this.getColorForChapter(chapterKey),
       weekNumber: session.weekNumber,
       sessionNumber: session.sessionNumber,
+      sessionId: session.sessionId, // new field, admin-only clickable target
     };
   }
 
@@ -250,5 +254,21 @@ export class CalendarComponent implements OnInit {
     const hours = Math.floor(time);
     const minutes = (time % 1) * 60;
     return `${hours.toString().padStart(2, '0')}:${minutes === 0 ? '00' : minutes}`;
+  }
+  selectedSessionId: number | null = null;
+
+  onSessionClick(session: PhilosophySession): void {
+    if (session.sessionId === undefined) return; // students don't get the modal
+    this.selectedSessionId = session.sessionId;
+  }
+
+  onModalClosed(): void {
+    this.selectedSessionId = null;
+  }
+
+  onAttendanceConfirmed(): void {
+    this.selectedSessionId = null;
+    // refresh the calendar's assignedCount display isn't strictly necessary here since
+    // attendance doesn't change who's assigned — only their status — so no reload needed.
   }
 }

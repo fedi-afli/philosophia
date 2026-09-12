@@ -26,3 +26,27 @@ export interface MySession {
   endTime: string;
   topic: string;
 }
+
+export interface SessionStudentDto {
+  studentId: number;
+  studentName: string;
+  attendanceStatus: string;
+}
+
+export interface SessionDetail {
+  sessionId: number;
+  chapterName: string;
+  sessionDate: string;
+  startTime: string;
+  endTime: string;
+  students: SessionStudentDto[];
+}
+
+export interface AttendanceEntry {
+  studentId: number;
+  absent: boolean;
+}
+
+export interface ConfirmAttendanceRequest {
+  attendance: AttendanceEntry[];
+}

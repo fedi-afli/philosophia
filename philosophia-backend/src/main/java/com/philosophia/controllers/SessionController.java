@@ -2,6 +2,8 @@ package com.philosophia.controllers;
 
 import com.philosophia.dto.session.MySessionsResponse;
 import com.philosophia.dto.session.ScheduledSessionResponse;
+import com.philosophia.dto.session.absence.ConfirmAttendanceRequest;
+import com.philosophia.dto.session.absence.SessionDetailResponse;
 import com.philosophia.services.SessionsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +33,19 @@ public class SessionController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ScheduledSessionResponse>> getAllSessions() {
         return ResponseEntity.ok(sessionsService.getAllSessions());
+    }
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<SessionDetailResponse> getSessionDetail(@PathVariable Long id) {
+        return ResponseEntity.ok(sessionsService.getSessionDetail(id));
+    }
+
+    @PostMapping("/{id}/attendance")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> confirmAttendance(
+            @PathVariable Long id,
+            @RequestBody ConfirmAttendanceRequest request) {
+        sessionsService.confirmAttendance(id, request);
+        return ResponseEntity.noContent().build();
     }
 }
